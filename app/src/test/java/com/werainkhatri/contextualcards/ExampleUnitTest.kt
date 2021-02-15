@@ -1,4 +1,4 @@
-package com.virenkhatri.contextualcards
+package com.werainkhatri.contextualcards
 
 import org.junit.Test
 
