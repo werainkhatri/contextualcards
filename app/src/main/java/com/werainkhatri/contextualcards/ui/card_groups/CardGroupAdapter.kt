@@ -1,6 +1,9 @@
 package com.werainkhatri.contextualcards.ui.card_groups
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +25,7 @@ class CardGroupAdapter(private val cardGroup: CardGroup, private val context: Co
     override fun getItemCount(): Int = cardGroup.cards.size
 
     override fun getItemViewType(position: Int): Int {
-        return when(cardGroup.design_type) {
+        return when (cardGroup.design_type) {
             "HC1" -> 1
             "HC3" -> 3
             "HC5" -> 5
@@ -33,7 +36,7 @@ class CardGroupAdapter(private val cardGroup: CardGroup, private val context: Co
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         rootView = parent.rootView
-        return when(viewType) {
+        return when (viewType) {
             1 -> HC1CardGroupHolder(
                     DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.cardview_hc1, parent, false)
             )
@@ -61,31 +64,53 @@ class CardGroupAdapter(private val cardGroup: CardGroup, private val context: Co
         holder.binding.card = card
 
         // Set bg_color to white if variable is null
-        if(card.bg_color == null) card.bg_color = "#FFFFFF"
+        if (card.bg_color == null) card.bg_color = "#FFFFFF"
 
         // If not scrollable, fit all cards into the screen width
-        if(!cardGroup.is_scrollable)
-            layout.layoutParams.width = (rootView.width - Utils.px2dp(context,20)) / cardGroup.cards.size
+        if (!cardGroup.is_scrollable)
+            layout.layoutParams.width = (rootView.width - Utils.px2dp(context, 20)) / cardGroup.cards.size
 
         // first and last cards should have extra padding
-        if(i == 0) {
+        if (i == 0) {
             params.setMargins(Utils.px2dp(context, 10), 0, 0, 0)
-        } else if(i == cardGroup.cards.size - 1) {
+        } else if (i == cardGroup.cards.size - 1) {
             params.setMargins(0, 0, Utils.px2dp(context, 10), 0)
         }
 
         // Remove description if null
-        if(card.formatted_description == null)
+        if (card.formatted_description == null || card.description == null) {
             holder.binding.cardDescription.visibility = View.GONE
+        } else {
+            // make text clickable
+            holder.binding.cardDescription.movementMethod = LinkMovementMethod.getInstance()
+            holder.binding.cardDescription.text = card.formatted_description.string(card.description, context)
+        }
 
+        // Remove title if null
+        if (card.formatted_title == null || card.title == null) {
+            holder.binding.cardTitle.visibility = View.GONE
+        } else {
+            // Make text clickable
+            holder.binding.cardTitle.movementMethod = LinkMovementMethod.getInstance()
+            holder.binding.cardTitle.text = card.formatted_title.string(card.title, context)
+        }
+
+        // removing elevation from card view, as required by design
         holder.binding.cardView.elevation = 0F
 
-        // loading to view image using glide
-        Glide.with(rootView)
-                .load(card.icon?.image_url)
-                .apply(RequestOptions.circleCropTransform())
-                .apply(RequestOptions.overrideOf(130, 130))
-                .into(holder.binding.icon)
+        // loading icon to view using glide. If null, removing it
+        if (card.icon == null) {
+            holder.binding.icon.visibility = View.GONE
+        } else {
+            Glide.with(rootView)
+                    .load(card.icon.image_url)
+                    .apply(RequestOptions.circleCropTransform())
+                    .apply(RequestOptions.overrideOf(130, 130))
+                    .into(holder.binding.icon)
+        }
+
+        if (card.url != null)
+            layout.setOnClickListener { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(card.url))) }
     }
 
     inner class HC1CardGroupHolder(val binding: CardviewHc1Binding) : RecyclerView.ViewHolder(binding.root)
