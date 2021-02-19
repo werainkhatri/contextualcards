@@ -1,13 +1,12 @@
 package com.werainkhatri.contextualcards.ui.data
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.werainkhatri.contextualcards.data.repositories.DataRepository
 import com.werainkhatri.contextualcards.databinding.FragmentDataBinding
@@ -39,7 +38,7 @@ class DataFragment : Fragment() {
         Log.d(tag, "Name: ${viewModel.data.value?.get(0)?.name}")
         viewModel.data.observe(viewLifecycleOwner, { data ->
              binding.rvCardGroups.also {
-                it.layoutManager = LinearLayoutManager(requireContext())
+                it.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
                 it.setHasFixedSize(true)
                 it.adapter = DataAdapter(data, this, requireContext())
             }
