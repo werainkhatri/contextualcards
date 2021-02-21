@@ -2,23 +2,18 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data>
-        <variable
-            name="cardGroup"
-            type="com.werainkhatri.contextualcards.data.models.CardGroup" />
-    </data>
-
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_cards"
+            android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:paddingVertical="8dp"
             app:layout_constraintStart_toStartOf="parent"/>
 
-    </FrameLayout>
+    </RelativeLayout>
 
 </layout>

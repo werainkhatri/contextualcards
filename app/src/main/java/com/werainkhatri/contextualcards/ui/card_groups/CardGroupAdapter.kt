@@ -1,21 +1,17 @@
 package com.werainkhatri.contextualcards.ui.card_groups
 
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.werainkhatri.contextualcards.R
 import com.werainkhatri.contextualcards.data.models.CardGroup
 import com.werainkhatri.contextualcards.databinding.CardviewHc1Binding
+import com.werainkhatri.contextualcards.databinding.CardviewHc9Binding
 import com.werainkhatri.contextualcards.databinding.RecyclerviewCardBinding
-import com.werainkhatri.contextualcards.utils.Utils
+import com.werainkhatri.contextualcards.utils.BindUtils
 
 class CardGroupAdapter(private val cardGroup: CardGroup, private val context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val tag = "CardGroupAdapter"
@@ -40,6 +36,9 @@ class CardGroupAdapter(private val cardGroup: CardGroup, private val context: Co
             1 -> HC1CardGroupHolder(
                     DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.cardview_hc1, parent, false)
             )
+            9 -> HC9CardGroupHolder(
+                    DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.cardview_hc9, parent, false)
+            )
             else -> CardGroupHolder(
                     DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.recyclerview_card, parent, false)
             )
@@ -47,8 +46,9 @@ class CardGroupAdapter(private val cardGroup: CardGroup, private val context: Co
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when (holder.itemViewType) {
-            1 -> bindHC1(holder, position)
+        when (holder) {
+            is HC1CardGroupHolder -> BindUtils.bindHC1(holder, position, cardGroup, rootView, context)
+            is HC9CardGroupHolder -> BindUtils.bindHC9(holder, position, cardGroup, rootView, context)
             else -> {
                 val mHolder = holder as CardGroupHolder
                 mHolder.binding.card = cardGroup.cards[position]
@@ -56,64 +56,9 @@ class CardGroupAdapter(private val cardGroup: CardGroup, private val context: Co
         }
     }
 
-    private fun bindHC1(h: RecyclerView.ViewHolder, i: Int) {
-        val card = cardGroup.cards[i]
-        val holder = h as HC1CardGroupHolder
-        val layout = holder.binding.parentLayout
-        val params = layout.layoutParams as RecyclerView.LayoutParams
-        holder.binding.card = card
-
-        // Set bg_color to white if variable is null
-        if (card.bg_color == null) card.bg_color = "#FFFFFF"
-
-        // If not scrollable, fit all cards into the screen width
-        if (!cardGroup.is_scrollable)
-            layout.layoutParams.width = (rootView.width - Utils.px2dp(context, 20)) / cardGroup.cards.size
-
-        // first and last cards should have extra padding
-        if (i == 0) {
-            params.setMargins(Utils.px2dp(context, 10), 0, 0, 0)
-        } else if (i == cardGroup.cards.size - 1) {
-            params.setMargins(0, 0, Utils.px2dp(context, 10), 0)
-        }
-
-        // Remove description if null
-        if (card.formatted_description == null || card.description == null) {
-            holder.binding.cardDescription.visibility = View.GONE
-        } else {
-            // make text clickable
-            holder.binding.cardDescription.movementMethod = LinkMovementMethod.getInstance()
-            holder.binding.cardDescription.text = card.formatted_description.string(card.description, context)
-        }
-
-        // Remove title if null
-        if (card.formatted_title == null || card.title == null) {
-            holder.binding.cardTitle.visibility = View.GONE
-        } else {
-            // Make text clickable
-            holder.binding.cardTitle.movementMethod = LinkMovementMethod.getInstance()
-            holder.binding.cardTitle.text = card.formatted_title.string(card.title, context)
-        }
-
-        // removing elevation from card view, as required by design
-        holder.binding.cardView.elevation = 0F
-
-        // loading icon to view using glide. If null, removing it
-        if (card.icon == null) {
-            holder.binding.icon.visibility = View.GONE
-        } else {
-            Glide.with(rootView)
-                    .load(card.icon.image_url)
-                    .apply(RequestOptions.circleCropTransform())
-                    .apply(RequestOptions.overrideOf(130, 130))
-                    .into(holder.binding.icon)
-        }
-
-        if (card.url != null)
-            layout.setOnClickListener { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(card.url))) }
-    }
-
     inner class HC1CardGroupHolder(val binding: CardviewHc1Binding) : RecyclerView.ViewHolder(binding.root)
+
+    inner class HC9CardGroupHolder(val binding: CardviewHc9Binding) : RecyclerView.ViewHolder(binding.root)
 
     inner class CardGroupHolder(val binding: RecyclerviewCardBinding) : RecyclerView.ViewHolder(binding.root)
 }
