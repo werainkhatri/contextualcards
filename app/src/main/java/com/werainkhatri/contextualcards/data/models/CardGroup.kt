@@ -2,7 +2,7 @@ package com.werainkhatri.contextualcards.data.models
 
 import androidx.lifecycle.ViewModel
 
-class CardGroup(
+data class CardGroup(
         val id: Int,
         val name: String,
         val design_type: String,

@@ -1,8 +1,6 @@
 package com.werainkhatri.contextualcards.data.models
 
-import androidx.room.Entity
 
-@Entity
 data class Card(
     val name: String,
     val formatted_title: FormattedText? = null,
