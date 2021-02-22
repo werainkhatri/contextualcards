@@ -19,6 +19,21 @@ Clone this repository and import it into **Android Studio**
 git clone https://github.com/werainkhatri/contextualcards
 ```
 
+## Screenshots
+
+### Landing Page
+<img src="screenshots/landing.jpg" width="370">
+
+### Loading Page
+<img src="screenshots/loading.jpg" width="370">
+
+### HC3
+
+<img src="screenshots/hc3.jpg" width="370">
+
+### Demo Video
+![Video](screenshots/demo.mp4)
+
 ## Generating signed APK
 
 From Android Studio:
