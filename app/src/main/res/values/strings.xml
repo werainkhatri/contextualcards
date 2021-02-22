@@ -4,4 +4,6 @@
     <string name="base_url">https://run.mocky.io/v3/</string>
     <string name="card_image_contentDescription">Image associated with the card</string>
     <string name="fampay_company_logo">fampay company logo</string>
+    <string name="dismiss_now">dismiss now</string>
+    <string name="remind_later">remind later</string>
 </resources>

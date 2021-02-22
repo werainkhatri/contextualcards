@@ -4,10 +4,15 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.ColorFilter
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.text.method.LinkMovementMethod
+import android.util.Log
 import android.view.View
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.Animation
+import android.view.animation.LinearInterpolator
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -15,6 +20,7 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.werainkhatri.contextualcards.data.models.CardGroup
 import com.werainkhatri.contextualcards.ui.card_groups.CardGroupAdapter
+import com.werainkhatri.contextualcards.ui.data.DataAdapter
 
 object BindUtils {
     private val tag = "BindUtils"
@@ -87,6 +93,100 @@ object BindUtils {
         holder.binding.cardView.setCardBackgroundColor(Color.parseColor(card.bg_color))
     }
 
+    fun bindHC3(
+            holder: DataAdapter.HC3CardGroupHolder,
+            i: Int,
+            cardGroups: List<CardGroup>,
+            rootView: View,
+            context: Context,
+            dismiss: (remind: Boolean) -> Unit
+    ) {
+        val card = cardGroups[i].cards[0]
+        holder.binding.card = card
+        if (card.bg_image != null)
+            Glide.with(rootView)
+                    .asBitmap()
+                    .load(card.bg_image.image_url)
+                    .into(object : CustomTarget<Bitmap>() {
+                        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                            val ratio = resource.width.toDouble() / resource.height.toDouble()
+                            val screenWidth = 1440.toDouble()
+                            holder.binding.bgImage.setImageBitmap(Bitmap.createScaledBitmap(
+                                resource,
+                                screenWidth.toInt(),
+                                (screenWidth / ratio).toInt(),
+                                false
+                            ))
+                        }
+                        override fun onLoadCleared(placeholder: Drawable?) {}
+                    })
+
+        holder.binding.title.text = card.formatted_title?.string(card.title!!, context)
+        holder.binding.description.text = card.formatted_description?.string(card.description!!, context)
+        holder.binding.cta.setCardBackgroundColor(Color.parseColor(card.cta?.get(0)?.bg_color))
+        holder.binding.cta.setOnClickListener {
+            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(card.cta?.get(0)?.url)))
+        }
+        holder.binding.ctaText.text = card.cta?.get(0)?.text
+        holder.binding.ctaText.setTextColor(Color.parseColor(card.cta?.get(0)?.text_color))
+
+        holder.binding.remindLaterCard.elevation = 0.0f
+        holder.binding.remindLaterCard.setOnClickListener { dismiss(true) }
+        holder.binding.dismissCard.elevation = 0.0f
+        holder.binding.dismissCard.setOnClickListener { dismiss(false) }
+
+        var cardState = false
+        holder.binding.bgImage.let { img ->
+            img.setOnClickListener {
+                if(it.animation != null && cardState && it.animation.hasEnded()) {
+                    it.startAnimation(Utils.horizontalTranslation(+0.4f, 0.0f))
+                    holder.binding.foreground.startAnimation(Utils.horizontalTranslation(+0.4f, 0.0f))
+                    it.animation.setAnimationListener(object: Animation.AnimationListener {
+                        override fun onAnimationStart(p0: Animation?) {
+                            holder.binding.remindLaterCard.elevation = 0f
+                            holder.binding.dismissCard.elevation = 0f
+                        }
+                        override fun onAnimationEnd(p0: Animation?) { cardState = !cardState }
+                        override fun onAnimationRepeat(p0: Animation?) {}
+                    })
+                }
+            }
+            img.setOnLongClickListener {
+                when {
+                    it.animation == null -> {
+                        it.startAnimation(Utils.horizontalTranslation(0.0f, +0.4f))
+                        holder.binding.foreground.startAnimation(Utils.horizontalTranslation(0.0f, +0.4f))
+                        it.animation.setAnimationListener(object: Animation.AnimationListener {
+                            override fun onAnimationStart(p0: Animation?) {}
+                            override fun onAnimationEnd(p0: Animation?) {
+                                holder.binding.remindLaterCard.elevation = 1f
+                                holder.binding.dismissCard.elevation = 1f
+                                cardState = !cardState
+                            }
+                            override fun onAnimationRepeat(p0: Animation?) {}
+                        })
+                        true
+                    }
+                    it.animation.hasEnded() && !cardState -> {
+                        it.startAnimation(Utils.horizontalTranslation(0.0f, +0.4f))
+                        holder.binding.foreground.startAnimation(Utils.horizontalTranslation(0.0f, +0.4f))
+                        it.animation.setAnimationListener(object: Animation.AnimationListener {
+                            override fun onAnimationStart(p0: Animation?) {}
+                            override fun onAnimationEnd(p0: Animation?) {
+                                holder.binding.remindLaterCard.elevation = 1f
+                                holder.binding.dismissCard.elevation = 1f
+                                cardState = !cardState
+                            }
+                            override fun onAnimationRepeat(p0: Animation?) {}
+                        })
+                        true
+                    }
+                    else -> true
+                }
+            }
+        }
+    }
+
     /**
      * Util function to bind HC9
      */
@@ -140,4 +240,5 @@ object BindUtils {
             }
         }
     }
+
 }

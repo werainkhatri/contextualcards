@@ -40,7 +40,7 @@ class DataFragment : Fragment() {
              binding.rvCardGroups.also {
                 it.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
                 it.setHasFixedSize(true)
-                it.adapter = DataAdapter(data, this, requireContext())
+                it.adapter = DataAdapter(data.toMutableList(), this, requireContext())
             }
         })
     }
