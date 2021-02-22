@@ -114,7 +114,7 @@ object BindUtils {
         cardGroup: CardGroup,
         rootView: View,
         context: Context,
-        dismiss: (remind: Boolean) -> Unit
+        remove: (dismiss: Boolean) -> Unit
     ) {
         val card = cardGroup.cards[0]
         if (card.bg_image != null)
@@ -152,9 +152,9 @@ object BindUtils {
         holder.binding.ctaText.setTextColor(Color.parseColor(card.cta?.get(0)?.text_color))
 
         holder.binding.remindLaterCard.elevation = 0.0f
-        holder.binding.remindLaterCard.setOnClickListener { dismiss(true) }
+        holder.binding.remindLaterCard.setOnClickListener { remove(false) }
         holder.binding.dismissCard.elevation = 0.0f
-        holder.binding.dismissCard.setOnClickListener { dismiss(false) }
+        holder.binding.dismissCard.setOnClickListener { remove(true) }
 
         var cardState = false
         holder.binding.bgImage.let { img ->

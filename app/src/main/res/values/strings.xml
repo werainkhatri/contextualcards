@@ -6,4 +6,6 @@
     <string name="fampay_company_logo">fampay company logo</string>
     <string name="dismiss_now">dismiss now</string>
     <string name="remind_later">remind later</string>
+    <string name="preference_file_key">fampay_shared_preferences</string>
+    <string name="dismissed_list">dismissed_list</string>
 </resources>

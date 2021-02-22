@@ -5,11 +5,18 @@
     android:layout_height="match_parent"
     tools:context=".ui.data.DataFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_card_groups"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:overScrollMode="never"
-        android:layout_marginVertical="@dimen/vertical_spacing"/>
+        android:layout_height="wrap_content">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_card_groups"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:overScrollMode="never"
+            android:layout_marginVertical="@dimen/vertical_spacing"/>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </FrameLayout>

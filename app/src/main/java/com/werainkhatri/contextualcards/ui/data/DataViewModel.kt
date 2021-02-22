@@ -19,27 +19,44 @@ class DataViewModel(
 
     private val _data = MutableLiveData<List<CardGroup>>()
     val data: LiveData<List<CardGroup>>
-    get() = _data
+        get() = _data
+
+    fun removeAt(i: Int) {
+        val list = _data.value?.toMutableList()
+        list?.let {
+            it.removeAt(i)
+            _data.value = it.toList()
+        }
+    }
 
     @InternalCoroutinesApi
-    fun updateData() {
+    fun updateData(toSkip: Set<Int>, onDone: () -> Unit) {
         job = Coroutines.ioThenMain(
-                work = { repository.getData() },
-                success = {
-                    if (it == null) Log.e(tag, "null APIResponse object")
-                    else if (it.card_groups == null) Log.e(tag, "null card_groups field")
-                    it?.let { apiResponse ->
-                         apiResponse.card_groups?.let { cardGroups ->
-                            _data.value = cardGroups
+            work = { repository.getData() },
+            success = { response ->
+                if (response == null) Log.e(tag, "null APIResponse object")
+                else if (response.card_groups == null) Log.e(tag, "null card_groups field")
+                response?.let { apiResponse ->
+                    apiResponse.card_groups?.let { cardGroups ->
+                        cardGroups.forEach {
+                            if (toSkip.contains(it.id)) {
+                                cardGroups.remove(it)
+                            }
                         }
+                        _data.value = cardGroups
                     }
-                },
-                failure = { Log.e(tag, "APIException: ${it.toString()}") }
+                }
+                onDone()
+            },
+            failure = {
+                Log.e(tag, "APIException: ${it.toString()}")
+                onDone()
+            }
         )
     }
 
     override fun onCleared() {
         super.onCleared()
-        if(::job.isInitialized) job.cancel()
+        if (::job.isInitialized) job.cancel()
     }
 }

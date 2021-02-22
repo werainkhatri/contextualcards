@@ -21,7 +21,8 @@ import com.werainkhatri.contextualcards.utils.BindUtils
 class DataAdapter(
         private val cardGroups: MutableList<CardGroup>,
         private val owner: ViewModelStoreOwner,
-        private val context: Context
+        private val context: Context,
+        private val dismiss: (position: Int, remindLater: Boolean) -> Unit,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val tag = "DataAdapter"
 
@@ -67,17 +68,13 @@ class DataAdapter(
         }
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when (holder) {
-            is DataViewHolder -> setCardsRecyclerView(holder.binding.recyclerView, cardGroups[position])
-            is HC3CardGroupHolder -> BindUtils.bindHC3(holder, cardGroups[position], rootView, context) { remindLater ->
-                if(!remindLater) // TODO add id of cardgroup to sharedpreferences
-                    cardGroups.removeAt(position)
-                notifyDataSetChanged()
-            }
-            is HC6CardGroupHolder -> BindUtils.bindHC6(holder, cardGroups[position], rootView, context)
-            else -> throw IllegalStateException("No card matches with holder type: $holder")
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) = when (holder) {
+        is DataViewHolder -> setCardsRecyclerView(holder.binding.recyclerView, cardGroups[position])
+        is HC3CardGroupHolder -> BindUtils.bindHC3(holder, cardGroups[position], rootView, context) {
+            dismiss(position, it)
         }
+        is HC6CardGroupHolder -> BindUtils.bindHC6(holder, cardGroups[position], rootView, context)
+        else -> throw IllegalStateException("No card matches with holder type: $holder")
     }
 
     private fun setCardsRecyclerView(recyclerView: RecyclerView, cardGroup: CardGroup) {
