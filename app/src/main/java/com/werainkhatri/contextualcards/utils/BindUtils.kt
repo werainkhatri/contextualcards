@@ -92,7 +92,7 @@ object BindUtils {
 
         // Set url for when user clicks on the card
         if (card.url != null)
-            layout.setOnClickListener {
+            holder.binding.button.setOnClickListener {
                 context.startActivity(
                     Intent(
                         Intent.ACTION_VIEW,
@@ -321,7 +321,7 @@ object BindUtils {
 
         // Set url for when user clicks on the card
         if (card.url != null)
-            holder.binding.cardView.setOnClickListener {
+            holder.binding.button.setOnClickListener {
                 context.startActivity(
                     Intent(
                         Intent.ACTION_VIEW,
