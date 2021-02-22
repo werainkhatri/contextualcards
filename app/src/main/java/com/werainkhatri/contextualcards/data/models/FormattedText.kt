@@ -56,7 +56,7 @@ data class FormattedText(val text: String, val entities: List<Entity>) {
             }
         }
         if(ei != entities.size) throw throw IllegalArgumentException("Number of entities are more than the number of \"{}\" brackets")
-        if(i<=len) builder.append(SpannableString(text.subSequence(i, text.length-1)))
+        if(i<=len) builder.append(SpannableString(text.subSequence(i, text.length)))
         return builder
     }
 
