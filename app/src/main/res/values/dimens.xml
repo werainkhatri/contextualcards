@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="card_corner_radius">15dp</dimen>
-    <dimen name="horizontal_spacing">20dp</dimen>
+    <dimen name="horizontal_spacing">5dp</dimen>
+    <dimen name="edge_spacing">20dp</dimen>
     <dimen name="vertical_spacing">8dp</dimen>
 </resources>

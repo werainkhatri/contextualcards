@@ -8,6 +8,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_card_groups"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:overScrollMode="never"
+        android:layout_marginVertical="@dimen/vertical_spacing"/>
 
 </FrameLayout>

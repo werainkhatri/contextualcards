@@ -5,42 +5,40 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/parent_layout"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:layout_marginHorizontal="@dimen/horizontal_spacing">
+        android:layout_marginHorizontal="@dimen/edge_spacing"
+        android:layout_marginVertical="@dimen/vertical_spacing">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/card_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:cardElevation="0dp"
+            android:background="@color/white"
+            app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="@dimen/card_corner_radius"
             app:layout_constraintStart_toStartOf="parent">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
 
                 <ImageView
                     android:id="@+id/icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:scaleType="fitXY"
-                    app:layout_constraintDimensionRatio="1:1"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
+                    android:layout_weight="1"/>
 
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="25"
                     android:paddingStart="10dp"
-                    android:paddingEnd="50dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/icon">
+                    android:paddingEnd="50dp">
 
                     <TextView
                         android:id="@+id/card_title"
@@ -61,10 +59,16 @@
 
                 </LinearLayout>
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_round_arrow_forward"/>
+
+            </LinearLayout>
 
         </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-    
+
 </layout>

@@ -40,22 +40,22 @@ object BindUtils {
         // If not scrollable, fit all cards into the screen width
         if (!cardGroup.is_scrollable)
             layout.layoutParams.width =
-                (rootView.width - context.resources.getDimension(R.dimen.horizontal_spacing)
+                (rootView.width - context.resources.getDimension(R.dimen.edge_spacing)
                     .toInt() * 2) / cardGroup.cards.size
 
         // first and last cards should have extra padding
         if (i == 0) {
             params.setMargins(
+                context.resources.getDimension(R.dimen.edge_spacing).toInt(),
+                0,
                 context.resources.getDimension(R.dimen.horizontal_spacing).toInt(),
-                0,
-                0,
                 0
             )
         } else if (i == cardGroup.cards.size - 1) {
             params.setMargins(
-                0,
-                0,
                 context.resources.getDimension(R.dimen.horizontal_spacing).toInt(),
+                0,
+                context.resources.getDimension(R.dimen.edge_spacing).toInt(),
                 0
             )
         }
@@ -78,9 +78,6 @@ object BindUtils {
             holder.binding.cardTitle.movementMethod = LinkMovementMethod.getInstance()
             holder.binding.cardTitle.text = card.formatted_title.string(card.title, context)
         }
-
-        // removing elevation from card view, as required by design
-        holder.binding.cardView.elevation = 0F
 
         // loading icon to view using glide. If null, removing it
         if (card.icon == null) {
@@ -114,13 +111,12 @@ object BindUtils {
      */
     fun bindHC3(
         holder: DataAdapter.HC3CardGroupHolder,
-        i: Int,
-        cardGroups: List<CardGroup>,
+        cardGroup: CardGroup,
         rootView: View,
         context: Context,
         dismiss: (remind: Boolean) -> Unit
     ) {
-        val card = cardGroups[i].cards[0]
+        val card = cardGroup.cards[0]
         if (card.bg_image != null)
             Glide.with(rootView)
                 .asBitmap()
@@ -251,7 +247,7 @@ object BindUtils {
         // first and last cards should have extra padding
         if (i == 0) {
             params.setMargins(
-                context.resources.getDimension(R.dimen.horizontal_spacing).toInt(),
+                context.resources.getDimension(R.dimen.edge_spacing).toInt(),
                 0,
                 0,
                 0
@@ -260,7 +256,7 @@ object BindUtils {
             params.setMargins(
                 0,
                 0,
-                context.resources.getDimension(R.dimen.horizontal_spacing).toInt(),
+                context.resources.getDimension(R.dimen.edge_spacing).toInt(),
                 0
             )
         }
@@ -283,6 +279,61 @@ object BindUtils {
     }
 
     /**
+     * Binding utility for card design type HC6
+     */
+    fun bindHC6(
+        holder: DataAdapter.HC6CardGroupHolder,
+        cardGroup: CardGroup,
+        rootView: View,
+        context: Context
+    ) {
+        val card = cardGroup.cards[0]
+
+        // Remove description if null
+        if (card.formatted_description == null || card.description == null) {
+            holder.binding.cardDescription.visibility = View.GONE
+        } else {
+            // make text clickable
+            holder.binding.cardDescription.movementMethod = LinkMovementMethod.getInstance()
+            holder.binding.cardDescription.text =
+                card.formatted_description.string(card.description, context)
+        }
+
+        // Remove title if null
+        if (card.formatted_title == null || card.title == null) {
+            holder.binding.cardTitle.visibility = View.GONE
+        } else {
+            // Make text clickable
+            holder.binding.cardTitle.movementMethod = LinkMovementMethod.getInstance()
+            holder.binding.cardTitle.text = card.formatted_title.string(card.title, context)
+        }
+
+        // loading icon to view using glide. If null, removing it
+        if (card.icon == null) {
+            holder.binding.icon.visibility = View.GONE
+        } else {
+            Glide.with(rootView)
+                .load(card.icon.image_url)
+                .apply(RequestOptions.circleCropTransform())
+                .apply(RequestOptions.overrideOf(130, 130))
+                .into(holder.binding.icon)
+        }
+
+        // Set url for when user clicks on the card
+        if (card.url != null)
+            holder.binding.cardView.setOnClickListener {
+                context.startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(card.url)
+                    )
+                )
+            }
+
+    }
+
+
+    /**
      * Binding utility for card design type HC9
      */
     fun bindHC9(
@@ -299,7 +350,7 @@ object BindUtils {
         // first and last cards should have extra padding
         if (i == 0) {
             params.setMargins(
-                context.resources.getDimension(R.dimen.horizontal_spacing).toInt(),
+                context.resources.getDimension(R.dimen.edge_spacing).toInt(),
                 0,
                 0,
                 0
@@ -308,7 +359,7 @@ object BindUtils {
             params.setMargins(
                 0,
                 0,
-                context.resources.getDimension(R.dimen.horizontal_spacing).toInt(),
+                context.resources.getDimension(R.dimen.edge_spacing).toInt(),
                 0
             )
         }

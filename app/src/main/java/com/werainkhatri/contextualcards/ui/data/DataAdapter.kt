@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.werainkhatri.contextualcards.R
 import com.werainkhatri.contextualcards.data.models.CardGroup
 import com.werainkhatri.contextualcards.databinding.CardviewHc3Binding
+import com.werainkhatri.contextualcards.databinding.CardviewHc6Binding
 import com.werainkhatri.contextualcards.databinding.RecyclerviewCardGroupBinding
 import com.werainkhatri.contextualcards.ui.card_groups.CardGroupAdapter
 import com.werainkhatri.contextualcards.ui.card_groups.CardGroupFactory
@@ -36,7 +37,8 @@ class DataAdapter(
             "HC3" -> 3
             "HC5" -> 5
             "HC6" -> 6
-            else -> 9
+            "HC9" -> 9
+            else -> throw IllegalStateException("No card matches with design type: ${cardGroups[position].design_type}")
         }
     }
 
@@ -49,24 +51,32 @@ class DataAdapter(
                 parent,
                 false
             ))
-            else -> DataViewHolder(DataBindingUtil.inflate(
+            6 -> HC6CardGroupHolder(DataBindingUtil.inflate(
+                LayoutInflater.from(parent.context),
+                R.layout.cardview_hc6,
+                parent,
+                false
+            ))
+            1, 5, 9 -> DataViewHolder(DataBindingUtil.inflate(
                 LayoutInflater.from(parent.context),
                 R.layout.recyclerview_card_group,
                 parent,
                 false
             ))
+            else -> throw IllegalStateException("No card maps with view type: $viewType")
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if(holder is DataViewHolder) {
-            setCardsRecyclerView(holder.binding.recyclerView, cardGroups[position])
-        } else if(holder is HC3CardGroupHolder) {
-            BindUtils.bindHC3(holder, position, cardGroups, rootView, context) {
-                if(it) // TODO add if of cardgroup to sharedpreferences
-                cardGroups.removeAt(position)
+        when (holder) {
+            is DataViewHolder -> setCardsRecyclerView(holder.binding.recyclerView, cardGroups[position])
+            is HC3CardGroupHolder -> BindUtils.bindHC3(holder, cardGroups[position], rootView, context) { remindLater ->
+                if(!remindLater) // TODO add id of cardgroup to sharedpreferences
+                    cardGroups.removeAt(position)
                 notifyDataSetChanged()
             }
+            is HC6CardGroupHolder -> BindUtils.bindHC6(holder, cardGroups[position], rootView, context)
+            else -> throw IllegalStateException("No card matches with holder type: $holder")
         }
     }
 
@@ -88,6 +98,8 @@ class DataAdapter(
     inner class DataViewHolder(val binding: RecyclerviewCardGroupBinding) : RecyclerView.ViewHolder(binding.root)
 
     inner class HC3CardGroupHolder(val binding: CardviewHc3Binding) : RecyclerView.ViewHolder(binding.root)
+
+    inner class HC6CardGroupHolder(val binding: CardviewHc6Binding) : RecyclerView.ViewHolder(binding.root)
 
     /**
      * LinearLayoutManager with scrollable parameter
