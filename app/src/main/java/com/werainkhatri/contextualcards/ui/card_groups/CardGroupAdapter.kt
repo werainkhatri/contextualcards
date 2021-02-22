@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.werainkhatri.contextualcards.R
 import com.werainkhatri.contextualcards.data.models.CardGroup
 import com.werainkhatri.contextualcards.databinding.CardviewHc1Binding
+import com.werainkhatri.contextualcards.databinding.CardviewHc5Binding
 import com.werainkhatri.contextualcards.databinding.CardviewHc9Binding
 import com.werainkhatri.contextualcards.databinding.RecyclerviewCardBinding
 import com.werainkhatri.contextualcards.utils.BindUtils
@@ -39,6 +40,9 @@ class CardGroupAdapter(private val cardGroup: CardGroup, private val context: Co
             9 -> HC9CardGroupHolder(
                     DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.cardview_hc9, parent, false)
             )
+            5 -> HC5CardGroupHolder(
+                DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.cardview_hc5, parent, false)
+            )
             else -> CardGroupHolder(
                     DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.recyclerview_card, parent, false)
             )
@@ -49,6 +53,7 @@ class CardGroupAdapter(private val cardGroup: CardGroup, private val context: Co
         when (holder) {
             is HC1CardGroupHolder -> BindUtils.bindHC1(holder, position, cardGroup, rootView, context)
             is HC9CardGroupHolder -> BindUtils.bindHC9(holder, position, cardGroup, rootView, context)
+            is HC5CardGroupHolder -> BindUtils.bindHC5(holder, position, cardGroup, rootView, context)
             else -> {
                 val mHolder = holder as CardGroupHolder
                 mHolder.binding.card = cardGroup.cards[position]
@@ -57,6 +62,8 @@ class CardGroupAdapter(private val cardGroup: CardGroup, private val context: Co
     }
 
     inner class HC1CardGroupHolder(val binding: CardviewHc1Binding) : RecyclerView.ViewHolder(binding.root)
+
+    inner class HC5CardGroupHolder(val binding: CardviewHc5Binding) : RecyclerView.ViewHolder(binding.root)
 
     inner class HC9CardGroupHolder(val binding: CardviewHc9Binding) : RecyclerView.ViewHolder(binding.root)
 
