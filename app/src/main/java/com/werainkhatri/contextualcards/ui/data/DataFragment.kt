@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -43,7 +44,12 @@ class DataFragment : Fragment() {
             prefs.getStringSet(getString(R.string.dismissed_list), mutableSetOf())
                 ?.map(String::toInt)?.toList()!!
         )
-        binding.swipeRefresh.setOnRefreshListener { getData() }
+        binding.swipeRefresh.setOnRefreshListener {
+            getData()
+            binding.shimmer.startShimmer()
+            binding.shimmer.visibility = View.VISIBLE
+            binding.rvCardGroups.visibility = View.GONE
+        }
         return binding.root
     }
 
@@ -56,7 +62,15 @@ class DataFragment : Fragment() {
         val repository = DataRepository.getInstance()
         factory = DataViewModelFactory(repository)
         viewModel = ViewModelProvider(this, factory).get(DataViewModel::class.java)
-        viewModel.updateData(toSkip) { binding.swipeRefresh.isRefreshing = false }
+        viewModel.updateData(toSkip) {
+            binding.swipeRefresh.isRefreshing = false
+            binding.shimmer.stopShimmer()
+            binding.shimmer.visibility = View.GONE
+            binding.rvCardGroups.visibility = View.VISIBLE
+            it?.let {
+                Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+            }
+        }
         viewModel.data.observe(viewLifecycleOwner, { data ->
             binding.rvCardGroups.also {
                 it.layoutManager =

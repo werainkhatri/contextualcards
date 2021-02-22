@@ -6,9 +6,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.werainkhatri.contextualcards.data.models.CardGroup
 import com.werainkhatri.contextualcards.data.repositories.DataRepository
+import com.werainkhatri.contextualcards.utils.APIException
 import com.werainkhatri.contextualcards.utils.Coroutines
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Job
+import java.net.UnknownHostException
 
 class DataViewModel(
     private val repository: DataRepository
@@ -30,7 +32,7 @@ class DataViewModel(
     }
 
     @InternalCoroutinesApi
-    fun updateData(toSkip: Set<Int>, onDone: () -> Unit) {
+    fun updateData(toSkip: Set<Int>, onDone: (message: String?) -> Unit) {
         job = Coroutines.ioThenMain(
             work = { repository.getData() },
             success = { response ->
@@ -46,11 +48,26 @@ class DataViewModel(
                         _data.value = cardGroups
                     }
                 }
-                onDone()
+                onDone(null)
             },
             failure = {
                 Log.e(tag, "APIException: ${it.toString()}")
-                onDone()
+                it?.let {
+                    when (it) {
+                        is APIException -> {
+                            Log.e(tag, "APIException: $it")
+                            onDone("Something went wrong from our side. Try again later")
+                        }
+                        is UnknownHostException -> {
+                            onDone("Check your internet connection and try again.")
+                        }
+                        else -> {
+                            Log.e(tag, "Exception while calling API: $it")
+                            onDone("Something went wrong. Please try again later")
+                        }
+                    }
+                }
+                onDone(null)
             }
         )
     }
